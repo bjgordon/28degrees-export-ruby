@@ -2,6 +2,7 @@
 Scraping utility for 28degrees Master Card website written in Ruby
 
 ##Installation
+
 ```
 # install deps
 bundle install
