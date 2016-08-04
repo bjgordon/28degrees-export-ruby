@@ -122,6 +122,7 @@ def write(transactions, file)
     acc.push el.to_csv
   end
   CSV.open(file, 'w') do |csv_object|
+    csv_object << ['date','amount_cents','memo']
     transactions.each do |transaction|
       csv_object << transaction.to_csv
     end
@@ -135,9 +136,9 @@ def read(file)
   transactions = []
   CSV.foreach(file, headers:true) do |row|
     t = Transaction.new
-    t.date = row.date
-    t.amount_cents = row.amount_cents
-    t.memo = row.memo
+    t.date = row['date']
+    t.amount_cents = row['amount_cents']
+    t.memo = row['memo']
     transactions.push t
   end
   transactions
@@ -145,6 +146,9 @@ end
 
 def export
   file = File.expand_path(ENV['TRANSACTIONS_DIR'] + '/28degrees.csv')
+
+  prev_trans = read file
+
   creds = [ENV["28DEGREES_USER"], ENV["28DEGREES_PW"]]
   agent = login creds
   if agent == nil
@@ -162,7 +166,7 @@ def export
   puts "Fetched #{trans.length} transactions:"
   pp trans
 
-  prev_trans = read file
+
   merged_trans = prev_trans | trans
   write merged_trans, file
 
